@@ -1,14 +1,14 @@
 "use client";
 
 import { Palette } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import { themes, type ThemeName } from "@/lib/themes";
 
 const storageKey = "portfolio-theme";
 const defaultTheme: ThemeName = "dark-purple";
 
 export function ThemeSwitcher() {
-  const selectRef = useRef<HTMLSelectElement>(null);
+  const [activeTheme, setActiveTheme] = useState<ThemeName>(defaultTheme);
 
   useEffect(() => {
     const savedTheme = window.localStorage.getItem(storageKey) as ThemeName | null;
@@ -17,38 +17,26 @@ export function ThemeSwitcher() {
         ? savedTheme
         : defaultTheme;
 
+    setActiveTheme(nextTheme);
     document.documentElement.dataset.theme = nextTheme;
-    if (selectRef.current) {
-      selectRef.current.value = nextTheme;
-    }
   }, []);
 
-  function handleThemeChange(nextTheme: ThemeName) {
+  function handleThemeChange() {
+    const currentIndex = themes.findIndex((item) => item.value === activeTheme);
+    const nextTheme = themes[(currentIndex + 1) % themes.length].value as ThemeName;
+    setActiveTheme(nextTheme);
     document.documentElement.dataset.theme = nextTheme;
     window.localStorage.setItem(storageKey, nextTheme);
   }
 
   return (
-    <label className="relative inline-flex items-center gap-2 rounded-full border border-border bg-card/80 px-3 py-2 text-sm text-muted backdrop-blur-xl transition hover:border-[var(--border-strong)]">
+    <button
+      aria-label={`Switch theme (current: ${activeTheme})`}
+      className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card/80 text-foreground shadow-[0_0_18px_var(--shadow)] outline-none backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:border-[var(--border-strong)] hover:shadow-[0_0_24px_var(--shadow)] focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+      onClick={handleThemeChange}
+      type="button"
+    >
       <Palette aria-hidden="true" className="h-4 w-4 text-icon" />
-      <span className="sr-only">Select color theme</span>
-      <select
-        aria-label="Select color theme"
-        className="max-w-28 appearance-none bg-transparent pr-1 font-medium text-foreground outline-none"
-        defaultValue={defaultTheme}
-        onChange={(event) => handleThemeChange(event.target.value as ThemeName)}
-        ref={selectRef}
-      >
-        {themes.map((item) => (
-          <option
-            className="bg-background text-foreground"
-            key={item.value}
-            value={item.value}
-          >
-            {item.name}
-          </option>
-        ))}
-      </select>
-    </label>
+    </button>
   );
 }

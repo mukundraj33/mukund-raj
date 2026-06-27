@@ -1,16 +1,18 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
+import emailjs from "@emailjs/browser";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowUp,
   Download,
   GitBranch,
+  LoaderCircle,
   Mail,
   PlayCircle,
   Send,
 } from "lucide-react";
-import { FormEvent } from "react";
+import { FormEvent, useState } from "react";
 import { Background, Navbar, Logo } from "@/components/layout";
 import {
   buttonClasses,
@@ -20,6 +22,7 @@ import {
   SectionTitle,
 } from "@/components/ui";
 import {
+  aboutContent,
   aboutFeatures,
   CONTACT_EMAIL,
   heroTechIcons,
@@ -36,38 +39,19 @@ import {
 } from "@/lib/animations";
 import { cn } from "@/lib/utils";
 
-const profilePlaceholder =
-  "data:image/svg+xml;utf8," +
-  encodeURIComponent(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="900" height="900" viewBox="0 0 900 900"><rect width="900" height="900" rx="450" fill="#100419"/><circle cx="450" cy="450" r="380" fill="#160723"/><text x="450" y="430" text-anchor="middle" fill="#fff7ff" font-size="48" font-family="Arial" font-weight="700">Add Profile</text><text x="450" y="492" text-anchor="middle" fill="#b7a9c7" font-size="42" font-family="Arial" font-weight="700">Image Here</text></svg>`,
-  );
-
-const aboutPlaceholder =
-  "data:image/svg+xml;utf8," +
-  encodeURIComponent(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="900" height="900" viewBox="0 0 900 900"><rect width="900" height="900" rx="450" fill="#12051c"/><circle cx="450" cy="450" r="360" fill="#1a0a27"/><text x="450" y="430" text-anchor="middle" fill="#fff7ff" font-size="48" font-family="Arial" font-weight="700">Add About</text><text x="450" y="492" text-anchor="middle" fill="#b7a9c7" font-size="42" font-family="Arial" font-weight="700">Image Here</text></svg>`,
-  );
-
-const projectPlaceholder =
-  "data:image/svg+xml;utf8," +
-  encodeURIComponent(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="900" height="500" viewBox="0 0 900 500"><defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="#15051f"/><stop offset="1" stop-color="#260d32"/></linearGradient></defs><rect width="900" height="500" rx="32" fill="url(#g)"/><rect x="70" y="64" width="760" height="372" rx="22" fill="#08020e" opacity=".72"/><text x="450" y="238" text-anchor="middle" fill="#fff7ff" font-size="44" font-family="Arial" font-weight="700">Add Project</text><text x="450" y="296" text-anchor="middle" fill="#b7a9c7" font-size="40" font-family="Arial" font-weight="700">Screenshot</text></svg>`,
-  );
+const profileImage = "/images/profile-mukund-raj.png";
+const aboutImage = "/images/profile-mukund-raj.png";
 
 export function PortfolioPage() {
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-  }
-
   return (
-    <main className="relative min-h-screen overflow-hidden">
+    <main className="relative min-h-screen overflow-x-hidden">
       <Background />
       <Navbar />
       <HeroSection />
       <AboutSection />
       <SkillsSection />
       <ProjectsSection />
-      <ContactSection onSubmit={handleSubmit} />
+      <ContactSection />
       <Footer />
     </main>
   );
@@ -97,7 +81,7 @@ function HeroSection() {
             className="font-display text-5xl font-extrabold leading-tight text-foreground sm:text-6xl lg:text-7xl"
             variants={fadeUp}
           >
-            Hi, I&apos;m Mukund Raj
+            Mukund Raj
           </motion.h1>
           <motion.h2
             className="mt-4 font-display text-3xl font-bold text-gradient sm:text-4xl lg:text-5xl"
@@ -109,19 +93,21 @@ function HeroSection() {
             className="mx-auto mt-7 max-w-xl text-base font-semibold leading-8 text-muted sm:text-lg lg:mx-0"
             variants={fadeUp}
           >
-            I build modern, performant, and user-friendly software products
-            with a focus on clean architecture, thoughtful interfaces, and
-            reliable engineering.
+            Building AI-powered applications, intelligent systems, and scalable web experiences.
           </motion.p>
           <motion.div
             className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row lg:justify-start"
             variants={fadeUp}
           >
             <a
-              className={buttonClasses({ size: "lg", className: "w-full gap-3 sm:w-auto" })}
+              className={buttonClasses({
+                size: "lg",
+                className:
+                  "w-full gap-3 text-white shadow-[0_0_40px_var(--shadow)] transition duration-200 hover:shadow-[0_0_52px_var(--shadow)] sm:w-auto",
+              })}
               href={RESUME_URL}
             >
-              Download Resume {/* Edit resume file/link in lib/site-data.ts. */}
+              Download Resume
               <Download aria-hidden="true" className="h-5 w-5" />
             </a>
             <a
@@ -141,18 +127,17 @@ function HeroSection() {
             className="mt-8 flex items-center justify-center gap-4 lg:justify-start"
             variants={fadeUp}
           >
-            {socialItems
-              .filter((item) => ["GitHub", "LinkedIn", "Email"].includes(item.label))
-              .map(({ href, Icon, label }) => (
-                <a
-                  aria-label={label}
-                  className="grid h-10 w-10 place-items-center rounded-full border border-border bg-card/80 text-icon shadow-[0_0_18px_var(--shadow)] outline-none backdrop-blur-xl transition hover:-translate-y-1 hover:border-[var(--border-strong)] hover:text-foreground focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
-                  href={href}
-                  key={label}
-                >
-                  <Icon aria-hidden="true" className="h-4 w-4" />
-                </a>
-              ))}
+            {socialItems.map(({ href, Icon, label }) => (
+              <a
+                aria-label={label}
+                className="group grid h-10 w-10 place-items-center rounded-full border border-border bg-card/80 text-icon shadow-[0_0_18px_var(--shadow)] outline-none backdrop-blur-xl transition duration-200 hover:-translate-y-1 hover:scale-105 hover:border-[var(--border-strong)] hover:shadow-[0_0_24px_var(--shadow)] hover:text-foreground focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+                href={href}
+                key={label}
+                title={label}
+              >
+                <Icon aria-hidden="true" className="h-4 w-4" />
+              </a>
+            ))}
           </motion.div>
         </motion.div>
 
@@ -166,12 +151,11 @@ function HeroSection() {
           <div className="relative h-full overflow-hidden rounded-full border border-[var(--border-strong)] bg-card shadow-[0_0_90px_var(--shadow)]">
             {/* Replace profile image here. Keep next/image and swap src with your image import or public path. */}
             <Image
-              alt="Add Profile Image Here"
-              className="h-full w-full object-cover"
+              alt="Mukund Raj portrait"
+              className="h-full w-full object-cover transition duration-500 hover:scale-105"
               height={900}
               priority
-              src={profilePlaceholder}
-              unoptimized
+              src={profileImage}
               width={900}
             />
           </div>
@@ -217,11 +201,10 @@ function AboutSection() {
             <div className="relative h-full overflow-hidden rounded-full border border-[var(--border-strong)] shadow-[0_0_80px_var(--shadow)]">
               {/* Replace about image here. Keep next/image and swap src with your image import or public path. */}
               <Image
-                alt="Add About Image Here"
-                className="h-full w-full object-cover"
+                alt="Mukund Raj portrait"
+                className="h-full w-full object-cover transition duration-500 hover:scale-105"
                 height={900}
-                src={aboutPlaceholder}
-                unoptimized
+                src={aboutImage}
                 width={900}
               />
             </div>
@@ -244,16 +227,9 @@ function AboutSection() {
               className="mt-6 space-y-4 text-base leading-8 text-foreground/88 sm:text-lg"
               variants={fadeUp}
             >
-              {/* Edit about text here. */}
-              <p>
-                I am a final year student at IIT Bombay and a software engineer
-                focused on building dependable products across web, systems,
-                and applied machine learning.
-              </p>
-              <p>
-                I enjoy turning ambiguous problems into clean user experiences,
-                scalable interfaces, and maintainable engineering systems.
-              </p>
+              {aboutContent.map((paragraph) => (
+                <p key={paragraph}>{paragraph}</p>
+              ))}
             </motion.div>
             <motion.div className="mt-10 grid gap-4" variants={staggerContainer}>
               {aboutFeatures.map(({ Icon, title }) => (
@@ -277,8 +253,10 @@ function AboutSection() {
 }
 
 function SkillsSection() {
-  const firstColumn = skills.slice(0, 4);
-  const secondColumn = skills.slice(4);
+  const [showAll, setShowAll] = useState(false);
+  const visibleSkills = showAll ? skills : skills.slice(0, 10);
+  const firstColumn = visibleSkills.slice(0, Math.ceil(visibleSkills.length / 2));
+  const secondColumn = visibleSkills.slice(Math.ceil(visibleSkills.length / 2));
 
   return (
     <section className="relative py-24 sm:py-28" id="skills">
@@ -288,6 +266,8 @@ function SkillsSection() {
         <motion.div
           className="mt-16 grid gap-10 lg:grid-cols-2 lg:gap-24"
           initial={false}
+          layout
+          transition={{ duration: 0.25 }}
           variants={staggerContainer}
           viewport={viewportOnce}
           whileInView="show"
@@ -300,6 +280,25 @@ function SkillsSection() {
             </div>
           ))}
         </motion.div>
+        <AnimatePresence mode="wait">
+          {!showAll ? (
+            <motion.button
+              animate={{ opacity: 1, y: 0 }}
+              className={buttonClasses({
+                variant: "secondary",
+                size: "md",
+                className: "mx-auto mt-10 min-w-36",
+              })}
+              exit={{ opacity: 0, y: 8 }}
+              initial={{ opacity: 0, y: 8 }}
+              onClick={() => setShowAll(true)}
+              type="button"
+              whileHover={{ scale: 1.02 }}
+            >
+              Show More
+            </motion.button>
+          ) : null}
+        </AnimatePresence>
       </Container>
     </section>
   );
@@ -351,32 +350,6 @@ function ProjectsSection() {
       <Container>
         <SectionTitle title="My Projects" />
         <motion.div
-          className="mt-14 flex flex-wrap justify-center gap-4"
-          initial={false}
-          variants={staggerContainer}
-          viewport={viewportOnce}
-          whileInView="show"
-        >
-          <motion.button
-            className={buttonClasses({ size: "md", className: "min-w-44" })}
-            type="button"
-            variants={fadeUp}
-          >
-            Web Application
-          </motion.button>
-          <motion.button
-            className={buttonClasses({
-              variant: "secondary",
-              size: "md",
-              className: "min-w-44",
-            })}
-            type="button"
-            variants={fadeUp}
-          >
-            Mobile Application
-          </motion.button>
-        </motion.div>
-        <motion.div
           className="mt-12 grid gap-7 md:grid-cols-2 xl:grid-cols-3"
           initial={false}
           variants={staggerContainer}
@@ -389,14 +362,13 @@ function ProjectsSection() {
                 className="flex h-full flex-col gap-5 p-4 sm:p-5"
                 interactive
               >
-                <div className="relative aspect-[16/9] overflow-hidden rounded-lg bg-background-soft">
-                  {/* Replace project screenshots here. Swap src with your screenshot import or public path. */}
+                <div className="group relative aspect-[16/9] overflow-hidden rounded-lg bg-background-soft">
                   <Image
                     alt={project.imageAlt}
-                    className="h-full w-full object-cover"
+                    className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                     height={500}
-                    src={projectPlaceholder}
-                    unoptimized
+                    loading="lazy"
+                    src={project.imageSrc}
                     width={900}
                   />
                 </div>
@@ -442,11 +414,72 @@ function ProjectsSection() {
   );
 }
 
-function ContactSection({
-  onSubmit,
-}: {
-  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
-}) {
+function ContactSection() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [status, setStatus] = useState<{
+    type: "success" | "error" | null;
+    message: string;
+  }>({ type: null, message: "" });
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const { name, email, message } = formData;
+
+    if (!name.trim() || !email.trim() || !message.trim()) {
+      setStatus({
+        type: "error",
+        message: "Please fill in all fields before sending your message.",
+      });
+      return;
+    }
+
+    const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
+    const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
+    const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
+
+    if (!serviceId || !templateId || !publicKey) {
+      setStatus({
+        type: "error",
+        message: "EmailJS is not configured yet. Please contact me directly.",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    setStatus({ type: null, message: "" });
+
+    try {
+      await emailjs.send(
+        serviceId,
+        templateId,
+        {
+          from_name: name,
+          email,
+          message,
+        },
+        publicKey,
+      );
+
+      setStatus({
+        type: "success",
+        message: "Thanks! Your message has been sent successfully.",
+      });
+      setFormData({ name: "", email: "", message: "" });
+    } catch {
+      setStatus({
+        type: "error",
+        message: "Something went wrong while sending your message. Please try again later.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
   return (
     <section className="relative py-24 sm:py-28" id="contact">
       <Glow className="right-8 bottom-20" size="lg" />
@@ -455,14 +488,26 @@ function ContactSection({
         <motion.form
           className="mx-auto mt-10 max-w-2xl rounded-2xl border border-border bg-card/70 p-6 shadow-[0_24px_90px_rgb(0_0_0_/_0.35)] backdrop-blur-xl sm:p-8"
           initial={false}
-          onSubmit={onSubmit}
+          onSubmit={handleSubmit}
           variants={scaleIn}
           viewport={viewportOnce}
           whileInView="show"
         >
           <div className="space-y-6">
-            <FormField id="name" label="Name" type="text" />
-            <FormField id="email" label="Email" type="email" />
+            <FormField
+              id="name"
+              label="Name"
+              onChange={(value) => setFormData((current) => ({ ...current, name: value }))}
+              type="text"
+              value={formData.name}
+            />
+            <FormField
+              id="email"
+              label="Email"
+              onChange={(value) => setFormData((current) => ({ ...current, email: value }))}
+              type="email"
+              value={formData.email}
+            />
             <div>
               <label
                 className="mb-2 block text-sm font-semibold text-foreground"
@@ -474,19 +519,44 @@ function ContactSection({
                 className="min-h-40 w-full resize-y rounded-lg border border-border bg-background/50 px-4 py-3 text-foreground outline-none transition placeholder:text-muted/70 focus:border-[var(--border-strong)] focus:ring-2 focus:ring-[var(--accent)]"
                 id="message"
                 name="message"
+                onChange={(event) =>
+                  setFormData((current) => ({ ...current, message: event.target.value }))
+                }
                 placeholder="Write your message"
                 required
+                value={formData.message}
               />
             </div>
           </div>
-          <div className="mt-7 flex justify-end">
+          <div className="mt-7 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-end">
             <button
               className={buttonClasses({ size: "md", className: "gap-2" })}
+              disabled={isSubmitting}
               type="submit"
             >
-              Send a message
-              <Send aria-hidden="true" className="h-4 w-4" />
+              {isSubmitting ? (
+                <>
+                  <LoaderCircle aria-hidden="true" className="h-4 w-4 animate-spin" />
+                  Sending...
+                </>
+              ) : (
+                <>
+                  Send a message
+                  <Send aria-hidden="true" className="h-4 w-4" />
+                </>
+              )}
             </button>
+            {status.type ? (
+              <p
+                aria-live="polite"
+                className={cn(
+                  "text-sm",
+                  status.type === "success" ? "text-[var(--accent)]" : "text-red-400",
+                )}
+              >
+                {status.message}
+              </p>
+            ) : null}
           </div>
         </motion.form>
         <div
@@ -496,9 +566,10 @@ function ContactSection({
           {socialItems.map(({ href, Icon, label }) => (
             <a
               aria-label={label}
-              className="grid h-11 w-11 place-items-center rounded-full border border-border bg-card/80 text-icon shadow-[0_0_20px_var(--shadow)] outline-none backdrop-blur-xl transition hover:-translate-y-1 hover:border-[var(--border-strong)] hover:text-foreground focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+              className="group grid h-11 w-11 place-items-center rounded-full border border-border bg-card/80 text-icon shadow-[0_0_20px_var(--shadow)] outline-none backdrop-blur-xl transition duration-200 hover:-translate-y-1 hover:scale-105 hover:border-[var(--border-strong)] hover:shadow-[0_0_24px_var(--shadow)] hover:text-foreground focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
               href={href}
               key={label}
+              title={label}
             >
               <Icon aria-hidden="true" className="h-4 w-4" />
             </a>
@@ -512,11 +583,15 @@ function ContactSection({
 function FormField({
   id,
   label,
+  onChange,
   type,
+  value,
 }: {
   id: string;
   label: string;
+  onChange: (value: string) => void;
   type: "email" | "text";
+  value: string;
 }) {
   return (
     <div>
@@ -530,9 +605,11 @@ function FormField({
         className="h-12 w-full rounded-lg border border-border bg-background/50 px-4 text-foreground outline-none transition placeholder:text-muted/70 focus:border-[var(--border-strong)] focus:ring-2 focus:ring-[var(--accent)]"
         id={id}
         name={id}
+        onChange={(event) => onChange(event.target.value)}
         placeholder={label}
         required
         type={type}
+        value={value}
       />
     </div>
   );

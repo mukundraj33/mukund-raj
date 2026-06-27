@@ -96,7 +96,8 @@ export function Navbar() {
           <a
             className={buttonClasses({
               size: "sm",
-              className: "gap-2",
+              className:
+                "gap-2 text-white shadow-[0_0_36px_var(--shadow)] transition duration-200 hover:shadow-[0_0_48px_var(--shadow)]",
             })}
             href={RESUME_URL}
           >
@@ -145,7 +146,11 @@ export function Navbar() {
               <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center">
                 <ThemeSwitcher />
                 <a
-                  className={buttonClasses({ size: "md", className: "gap-2" })}
+                  className={buttonClasses({
+                    size: "md",
+                    className:
+                      "gap-2 text-white shadow-[0_0_36px_var(--shadow)] transition duration-200 hover:shadow-[0_0_48px_var(--shadow)]",
+                  })}
                   href={RESUME_URL}
                   onClick={closeMenu}
                 >
