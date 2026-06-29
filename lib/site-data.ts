@@ -106,7 +106,7 @@ export const projects = [
     description:
       "Developed a multilingual NLP pipeline for processing and analyzing text across languages, enabling richer language understanding and downstream insights.",
     imageAlt: "Multilingual NLP project screenshot",
-    imageSrc: "/images/multilingual-nlp.png",
+    imageSrc: "/images/multilingual-nlp-analysis.png",
     githubUrl: SOCIAL_LINKS.github,
     demoUrl: "#",
   },
