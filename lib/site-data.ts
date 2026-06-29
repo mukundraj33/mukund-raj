@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 
 export const RESUME_URL = "/resume/Mukund_Raj_Resume.pdf";
-export const CONTACT_EMAIL = "mukund@example.com";
+export const CONTACT_EMAIL = "mukundraj01234@gmail.com";
 
 export const aboutContent = [
   "I am a final year student at IIT Bombay and a software engineer focused on building dependable products across web, systems, and applied machine learning.",
@@ -26,9 +26,9 @@ export const aboutContent = [
 ] as const;
 
 export const SOCIAL_LINKS = {
-  github: "https://github.com/your-github",
-  linkedin: "https://www.linkedin.com/in/your-linkedin",
-  instagram: "https://www.instagram.com/your-instagram",
+  github: "https://github.com/mukundraj33",
+  linkedin: "https://www.linkedin.com/in/mukundrajiitb",
+  instagram: "https://www.instagram.com/mukund_raj_/",
   email: `mailto:${CONTACT_EMAIL}`,
   phone: "tel:+918102806533",
 } as const;

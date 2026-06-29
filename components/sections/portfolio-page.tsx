@@ -623,7 +623,7 @@ function Footer() {
       <Container className="flex flex-col items-center justify-between gap-5 text-center text-sm text-muted sm:flex-row sm:text-left">
         <Logo />
         <p>
-          Built with Next.js · {currentYear} ·{" "}
+          Built with Next.js · {currentYear} ·{""}
           <a className="text-link" href={`mailto:${CONTACT_EMAIL}`}>
             {CONTACT_EMAIL}
           </a>
