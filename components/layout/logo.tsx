@@ -14,7 +14,7 @@ export function Logo({ className }: LogoProps) {
       )}
       href="#home"
     >
-      Mukund&lt;/&gt; {/* Edit logo text here. */}
+      mukund_ {/* Edit logo text here. */}
     </a>
   );
 }
