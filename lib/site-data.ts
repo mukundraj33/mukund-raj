@@ -17,7 +17,7 @@ import {
   Sparkles,
 } from "lucide-react";
 
-export const RESUME_URL = "/resume/Mukund_Raj_Resume.pdf";
+export const RESUME_URL = "/resume/External_resume (2).pdf";
 export const CONTACT_EMAIL = "mukundraj01234@gmail.com";
 
 export const aboutContent = [
@@ -92,6 +92,24 @@ export const skills = [
 }>;
 
 export const projects = [
+    {
+    title: "LearnMate AI — Convolve Hackathon",
+    description:
+      "Built a hybrid RAG learning system combining semantic and keyword search for accurate, personalized learning assistance.",
+    imageAlt: "LearnMate AI hackathon project screenshot",
+    imageSrc: "/images/convolve-ai-hackathon.png",
+    githubUrl: "https://github.com/mukundraj33/Convolve_ML_Hackathon",
+    demoUrl: "#",
+  },
+  {
+    title: "Algorithmic Trading Application",
+    description:
+      "Built a Python-based intraday trading platform for NIFTY50 with technical indicators, strategy backtesting, and performance analytics.",
+    imageAlt: "Algorithmic trading application screenshot",
+    imageSrc: "/images/algo-trading-application.png",
+    githubUrl: "https://github.com/mukundraj33/quant-trading-ai",
+    demoUrl: "#",
+  },
   {
     title: "Hand Gesture Recognition",
     description:
@@ -99,7 +117,7 @@ export const projects = [
     imageAlt: "Hand gesture recognition project screenshot",
     imageSrc: "/images/hand-gesture-recognition.png",
     githubUrl: SOCIAL_LINKS.github,
-    demoUrl: "#",
+    demoUrl: "https://hand-gesture-recognition-mukundraj.streamlit.app/",
   },
   {
     title: "Multilingual NLP",
@@ -117,7 +135,7 @@ export const projects = [
     imageAlt: "Agentic AI tutor project screenshot",
     imageSrc: "/images/agentic-ai-tutor.png",
     githubUrl: SOCIAL_LINKS.github,
-    demoUrl: "#",
+    demoUrl: "https://remind-mukundraj.streamlit.app/",
   },
   {
     title: "Face Mask Detection",
@@ -126,7 +144,7 @@ export const projects = [
     imageAlt: "Face mask detection project screenshot",
     imageSrc: "/images/face-mask-detection.png",
     githubUrl: SOCIAL_LINKS.github,
-    demoUrl: "#",
+    demoUrl: "https://face-mask-recognition-mukundraj.streamlit.app/",
   },
   {
     title: "Agentic AI Trainer",
